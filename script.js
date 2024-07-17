@@ -24,12 +24,12 @@ function playRound(humanChoice) {
     wins = {
         "rock": ["scissors", "rock crushes scissors"],
         "paper": ["rock", "paper covers rock"],
-        "scissors": ["paper", "scissors cuts paper"],
-        "": ["", "we played the same move"]
+        "scissors": ["paper", "scissors cut paper"],
+        "tie": ["tie", "we played the same move"]
     }
     
     if (computerChoice == humanChoice) {
-        playGame({"": wins[""][1]}, humanChoice, computerChoice);
+        playGame({"tie": wins["tie"]}, humanChoice, computerChoice);
     }
     else if (wins[humanChoice][0] == computerChoice) {
         playGame({"human": wins[humanChoice]}, humanChoice, computerChoice);
@@ -62,7 +62,7 @@ function playGame(winnerDict, humanChoice, computerChoice) {
     
     // Anounce round winner
     document.querySelector('.round').textContent = 
-    `Hmm.. ${humanChoice} and ${computerChoice}. Since ${Object.values(winnerDict)[0]}, ${message}`;
+    `Hmm.. ${humanChoice} and ${computerChoice}. Since ${Object.values(winnerDict)[0][1]}, ${message}`;
 
     // Reset game every 5 rounds
     if (round >= 5) {
