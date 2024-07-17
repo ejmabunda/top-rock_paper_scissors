@@ -1,5 +1,5 @@
 function getHumanChoice() {
-    return prompt("Rock, paper or scissors?");
+    return prompt('rock, paper or scissors?');
 }
 
 function getComputerChoice() {
@@ -15,7 +15,12 @@ function getComputerChoice() {
     }
 }
 
-function playRound(computerChoice, humanChoice) {
+let humanScore = 0;
+let computerScore = 0;
+let round = 1;
+
+function playRound(humanChoice) {
+    let computerChoice = getComputerChoice();
     wins = {
         "rock": ["scissors", "rock crushes scissors"],
         "paper": ["rock", "paper covers rock"],
@@ -24,59 +29,73 @@ function playRound(computerChoice, humanChoice) {
     }
     
     if (computerChoice == humanChoice) {
-        return {"": wins[""][1]};
+        playGame({"": wins[""][1]}, humanChoice, computerChoice);
     }
     else if (wins[humanChoice][0] == computerChoice) {
-        return {"human": wins[humanChoice][1]};
+        playGame({"human": wins[humanChoice]}, humanChoice, computerChoice);
     }
     else if (wins[computerChoice][0] == humanChoice) {
-        return {"computer": wins[computerChoice][1]};
+        playGame({"computer": wins[computerChoice]}, humanChoice, computerChoice);
     }
-    console.log(computerChoice, humanChoice);
-    return null;
+    else console.log(computerChoice, humanChoice, 'something went wrong..');
+
+    round++;
+    console.log(humanChoice, computerChoice);
 }
 
-function playGame() {
-    let humanScore = 0;
-    let computerScore = 0;
-    
-    for (let x = 0; x < 5; x++) {
-        console.log(`Round ${x + 1}: You:${humanScore}, Me:${computerScore}`);
-        let humanChoice = getHumanChoice();
-        let computerChoice = getComputerChoice();
-        
-        // To manually stop the game
-        if (humanChoice == "") {
-            return;
-        }
-    
-        let winner = playRound(computerChoice, humanChoice);
-        // console.log(Object.keys(winner));
-    
-        if (winner.hasOwnProperty("human")) {
-            message = "you win this round.";
-            humanScore++;
-        }
-        else if (winner.hasOwnProperty("computer")) {
-            message = "I win this round.";
-            computerScore++;
-        }
-        else {
-            message = "no one wins this round."
-        }
-        
-        console.log(`Hmm.. ${humanChoice} and ${computerChoice}. Since ${Object.values(winner)[0]}, ${message}`);
+function playGame(winnerDict, humanChoice, computerChoice) {
+    // Write message for winner
+    document.querySelector('.round').textContent = `Round ${round}`;
+    if (winnerDict.hasOwnProperty("human")) {
+        message = "you win this round.";
+        humanScore++;
+        document.querySelector('.player .score').textContent = humanScore;
     }
-    if (humanScore == computerScore) {
-        winner = "no one";
-    }
-    else if (humanScore > computerScore) {
-        winner = "you";
+    else if (winnerDict.hasOwnProperty("computer")) {
+        message = "I win this round.";
+        computerScore++;
+        document.querySelector('.computer .score').textContent = computerScore;
     }
     else {
-        winner = "I";
+        message = "no one wins this round."
     }
-    console.log(`Game over.......\n-> Final score: You:${humanScore}, Me:${computerScore}, GGs, ${winner} won the game.`);
+    
+    // Anounce round winner
+    document.querySelector('.round').textContent = 
+    `Hmm.. ${humanChoice} and ${computerChoice}. Since ${Object.values(winnerDict)[0]}, ${message}`;
+
+    // Reset game every 5 rounds
+    if (round >= 5) {
+        if (humanScore == computerScore) {
+            winner = "no one";
+        }
+        else if (humanScore > computerScore) {
+            winner = "you";
+        }
+        else {
+            winner = "I";
+        }
+
+        resetGame();
+
+        document.querySelector('.player .score').textContent = 0;
+        document.querySelector('.computer .score').textContent = 0;
+
+        document.querySelector('.results').textContent = 
+        `That was 5 rounds\nGGs, ${winner} won this game.`;
+    }
+    else document.querySelector('.results').textContent = '';
 }
 
-playGame();
+function resetGame() {
+    humanScore = 0;
+    computerScore = 0;
+    round = 1;
+}
+
+let playerSelectionsButtons = document.querySelectorAll('.player-selection');
+for (const selection of playerSelectionsButtons) {
+    selection.addEventListener('click', () => {
+        playRound(selection.textContent.toLowerCase());
+    });
+}
